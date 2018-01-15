@@ -18,14 +18,14 @@ class CNote
 private:
 	int id = -1;
 	int type = -1;
-	float time = 0;
-	float position = 0;
-	float length = 0;
+	double time = 0;
+	double position = 0;
+	double length = 0;
 	int linkFrom = -1;
 	int linkTo = -1;
 
 public:
-	CNote(int rdID, int rdType, float rdTime, float rdPos, float rdLen, float rdLinkFrom, float rdLinkTo)
+	CNote(int rdID, int rdType, double rdTime, double rdPos, double rdLen, double rdLinkFrom, double rdLinkTo)
 	{
 		writeID(rdID);
 		writeType(rdType);
@@ -46,17 +46,17 @@ public:
 		return type;
 	}
 
-	float getTime()
+	double getTime()
 	{
 		return time;
 	}
 
-	float getPos()
+	double getPos()
 	{
 		return position;
 	}
 
-	float getLen()
+	double getLen()
 	{
 		return length;
 	}
@@ -83,19 +83,19 @@ public:
 		return 0;
 	}
 
-	int writeTime(float rdTime)
+	int writeTime(double rdTime)
 	{
 		time = rdTime;
 		return 0;
 	}
 
-	int writePos(float rdPos)
+	int writePos(double rdPos)
 	{
 		position = rdPos;
 		return 0;
 	}
 
-	int writeLen(float rdLen)
+	int writeLen(double rdLen)
 	{
 		length = rdLen;
 		return 0;

@@ -12,20 +12,25 @@
 #include <iostream>
 #include <fstream>
 #include <exception>
+#include <algorithm>
+#include <vector>
 using namespace std;
 
-typedef struct SNote
+template <typename T> struct Note
 {
 	int id;
 	int type;
-	double time;
+	T time;
 	double position;
 	double length;
-	struct SNote *linkFrom;
-	struct SNote *linkTo;
-	struct SNote *prev;
-	struct SNote *next;
-}Note;
+	Note *linkFrom;
+	Note *linkTo;
+
+	bool operator<(const Note &rhs) const
+	{
+		return (time < rhs.time);
+	}
+};
 
 class Chart
 {
@@ -33,9 +38,9 @@ private:
 	double bpm = 240;
 	double pageSize = 1;
 	double pageShift = 0;
-	int type = 0;
+	int version = 1;
 	int noteCount = 0;
-	Note *list;
+	template <typename T> vector<Note<T>> noteList;
 
 public:
 	Chart();

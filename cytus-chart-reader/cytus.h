@@ -12,8 +12,7 @@
 #include <iostream>
 #include <fstream>
 #include <exception>
-#include <algorithm>
-#include <vector>
+#include <list>
 using namespace std;
 
 template <typename T> struct Note
@@ -40,7 +39,7 @@ private:
 	double pageShift = 0;
 	int version = 1;
 	int noteCount = 0;
-	template <typename T> vector<Note<T>> noteList;
+	template <typename T> list<Note<T>> noteList;
 
 public:
 	Chart();

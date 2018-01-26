@@ -92,11 +92,10 @@ struct Note
 class Chart: public list<Note>
 {
 private:
+	int version = 0;
 	double bpm = 240;
 	double pageSize = 1;
 	double pageShift = 0;
-	int version = 1;
-	int noteCount = 0;
 
 public:
 	Chart();

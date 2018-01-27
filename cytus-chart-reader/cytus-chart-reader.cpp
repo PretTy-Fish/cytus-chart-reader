@@ -10,7 +10,6 @@
 #include <iostream>
 #include <fstream>
 #include "cytus.h"
-using namespace std;
 
 int main(int argc, char *argv[])
 {

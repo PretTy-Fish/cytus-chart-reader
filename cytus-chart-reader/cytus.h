@@ -9,22 +9,38 @@
 
 #pragma once
 
+#include <string>
+#include <list>
+#include <exception>
+#include <stdexcept>
 #include <iostream>
 #include <fstream>
-#include <exception>
-#include <list>
-using namespace std;
 
-class cytus_error: public exception
+class cytus_error: public std::exception
 {
-private:
-	char const* what_arg;
-
 public:
-	cytus_error(const char* error_message)
-		: what_arg(error_message)
-	{}
-	const char* what() const { return what_arg; }
+	cytus_error(const std::string &error_message = "cytus error") noexcept
+		: exception(error_message.c_str())
+	{
+	}
+};
+
+class chart_error : public cytus_error
+{
+public:
+	chart_error(const std::string &error_message = "chart error") noexcept
+		: cytus_error(error_message)
+	{
+	}
+};
+
+class note_error : public chart_error
+{
+public:
+	note_error(const std::string &error_message = "ntoe error") noexcept
+		: chart_error(error_message)
+	{
+	}
 };
 
 struct TimeCode
@@ -38,7 +54,7 @@ struct TimeCode
 		tick = -DBL_MAX;
 		if (rhs < 0)
 		{
-			throw new cytus_error("Input time lower than 0.");
+			throw new note_error("Input time lower than 0.");
 			version = 0;
 		}
 		else
@@ -48,12 +64,13 @@ struct TimeCode
 		time = rhs;
 		return;
 	}
+
 	void operator=(const int &rhs)
 	{
 		time = -DBL_MAX;
 		if (rhs < 0)
 		{
-			throw new cytus_error("Input time lower than 0.");
+			throw new note_error("Input time lower than 0.");
 			version = 0;
 		}
 		else
@@ -63,12 +80,46 @@ struct TimeCode
 		tick = rhs;
 		return;
 	}
+
+	void operator=(const TimeCode &rhs)
+	{
+		switch (rhs.version)
+		{
+		case 1:
+			operator=(rhs.time);
+			break;
+
+		case 2:
+			operator=(rhs.tick);
+			break;
+
+		default:
+			throw new note_error("Invalid time code.");
+			break;
+		}
+		return;
+	}
+
 	bool operator<(const TimeCode &rhs) const
 	{
 		if(!(((version == 1) || (version == 2)) && ((rhs.version == 1) || (rhs.version == 2))))
-			throw new cytus_error("Invalid time code.");
+			throw new note_error("Invalid time code.");
 		else if (version != rhs.version)
-			throw new cytus_error("Incomparable time code: Different version of time code.");
+			throw new note_error("Incomparable time code: Different version of time code.");
+		else switch (version)
+		{
+		case 1:
+			return (time < rhs.time);
+			break;
+
+		case 2:
+			return (tick < rhs.tick);
+			break;
+
+		default:
+			throw new note_error("Invalid time code.");
+			break;
+		}
 		return (time < rhs.time) || (tick < rhs.tick);
 	}
 };
@@ -89,25 +140,32 @@ struct Note
 	}
 };
 
-class Chart: public list<Note>
+class Chart: public std::list<Note>
 {
 private:
 	int version = 0;
-	double bpm = 240;
-	double pageSize = 1;
-	double pageShift = 0;
+	double tempo = 240.0;
+	double pageSize = 1.0;
+	double pageShift = 0.0;
 
 public:
-	Chart();
+	Chart(const std::string &input);
 	virtual void sort();
+	void parse(const std::string &input);
 };
 
-Chart::Chart()
+Chart::Chart(const std::string &input)
 {
-	//Still thinking...
+	parse(input);
 }
 
 void Chart::sort()
 {
-	list<Note>::sort();
+	std::list<Note>::sort();
+}
+
+void Chart::parse(const std::string &input)
+{
+	std::ifstream chartFile(input, std::ios::in);
+	//Still thinking...
 }

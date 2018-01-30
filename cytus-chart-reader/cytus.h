@@ -70,7 +70,6 @@ struct TimeCode
 
 	void operator=(const double &rhs)
 	{
-		tick = -DBL_MAX;
 		if (rhs < 0)
 		{
 			throw new note_error("Input time lower than 0.");
@@ -80,13 +79,13 @@ struct TimeCode
 		{
 			version = 1;
 		}
+		tick = -INT_MAX-1;
 		time = rhs;
 		return;
 	}
 
 	void operator=(const int &rhs)
 	{
-		time = -DBL_MAX;
 		if (rhs < 0)
 		{
 			throw new note_error("Input time lower than 0.");
@@ -96,6 +95,7 @@ struct TimeCode
 		{
 			version = 2;
 		}
+		time = -DBL_MAX;
 		tick = rhs;
 		return;
 	}
@@ -173,12 +173,50 @@ struct TimeCode
 			throw new note_error("Incomparable time code: Different version of time code.");
 		return tick > rhs;
 	}
+
+	bool operator==(const TimeCode &rhs) const
+	{
+		if (!(((version == 1) || (version == 2)) && ((rhs.version == 1) || (rhs.version == 2))))
+			throw new note_error("Invalid time code.");
+		else if (version != rhs.version)
+			throw new note_error("Incomparable time code: Different version of time code.");
+		else switch (version)
+		{
+		case 1:
+			return (time == rhs.time);
+			break;
+
+		case 2:
+			return (tick == rhs.tick);
+			break;
+
+		default:
+			throw new note_error("Invalid time code.");
+			break;
+		}
+		return (version == rhs.version) && (time == rhs.time) && (tick == rhs.tick);
+	}
+
+	bool operator==(const double &rhs) const
+	{
+		if (version != 1)
+			throw new note_error("Incomparable time code: Different version of time code.");
+		return time == rhs;
+	}
+
+	bool operator==(const int &rhs) const
+	{
+		if (version != 2)
+			throw new note_error("Incomparable time code: Different version of time code.");
+		return tick == rhs;
+	}
 };
 
 struct Note
 {
 	int id;
 	int type;
+	int pageIndex;
 	TimeCode time;
 	double position;
 	double length;
@@ -201,8 +239,15 @@ private:
 
 public:
 	Chart(const std::string &input);
+	const Note &operator[](int request) const;
+	Note &operator[](int request);
+	const Note &at(int request) const;
+	Note &at(int request);
+	void sortID();
 	virtual void sort();
+	void link(int firstID, int secondID);
 	void parse(const std::string &input);
+	void save(const std::string &output);
 };
 
 Chart::Chart(const std::string &input)
@@ -210,13 +255,63 @@ Chart::Chart(const std::string &input)
 	parse(input);
 }
 
+const Note &Chart::operator[](int request) const
+{
+	const_iterator it;
+	for (it = this->begin(); (it->id != request) || (it != this->end()); ++it);
+	if (it->id != request)
+		throw new chart_error("Note not found.");
+	return *it;
+}
+
+Note &Chart::operator[](int request)
+{
+	iterator it;
+	for (it = this->begin(); (it->id != request) || (it != this->end()); ++it);
+	if (it->id != request)
+		throw new chart_error("Note not found.");
+	return *it;
+}
+
+const Note &Chart::at(int request) const
+{
+	return Chart::operator[](request);
+}
+
+Note &Chart::at(int request)
+{
+	return Chart::operator[](request);
+}
+
+void Chart::sortID()
+{
+	iterator it;
+	int i;
+	for (it = this->begin(), i = 0; it != this->end(); ++it, ++i)
+		it->id = i;
+	return;
+}
+
 void Chart::sort()
 {
 	std::list<Note>::sort();
+	Chart::sortID();
+	return;
+}
+
+void Chart::link(int firstID, int secondID)
+{
+	//Still thinking...
 }
 
 void Chart::parse(const std::string &input)
 {
 	std::ifstream chartFile(input, std::ios::in);
+	//Still thinking...
+}
+
+void Chart::save(const std::string &output)
+{
+	std::ofstream chartFile(output, std::ios::out);
 	//Still thinking...
 }

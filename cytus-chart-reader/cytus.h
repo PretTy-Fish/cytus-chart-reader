@@ -49,6 +49,25 @@ struct TimeCode
 	double time;
 	int tick;
 
+	void operator=(const TimeCode &rhs)
+	{
+		switch (rhs.version)
+		{
+		case 1:
+			operator=(rhs.time);
+			break;
+
+		case 2:
+			operator=(rhs.tick);
+			break;
+
+		default:
+			throw new note_error("Invalid time code.");
+			break;
+		}
+		return;
+	}
+
 	void operator=(const double &rhs)
 	{
 		tick = -DBL_MAX;
@@ -81,25 +100,6 @@ struct TimeCode
 		return;
 	}
 
-	void operator=(const TimeCode &rhs)
-	{
-		switch (rhs.version)
-		{
-		case 1:
-			operator=(rhs.time);
-			break;
-
-		case 2:
-			operator=(rhs.tick);
-			break;
-
-		default:
-			throw new note_error("Invalid time code.");
-			break;
-		}
-		return;
-	}
-
 	bool operator<(const TimeCode &rhs) const
 	{
 		if(!(((version == 1) || (version == 2)) && ((rhs.version == 1) || (rhs.version == 2))))
@@ -121,6 +121,57 @@ struct TimeCode
 			break;
 		}
 		return (time < rhs.time) || (tick < rhs.tick);
+	}
+
+	bool operator<(const double &rhs) const
+	{
+		if (version != 1)
+			throw new note_error("Incomparable time code: Different version of time code.");
+		return time < rhs;
+	}
+
+	bool operator<(const int &rhs) const
+	{
+		if (version != 2)
+			throw new note_error("Incomparable time code: Different version of time code.");
+		return tick < rhs;
+	}
+
+	bool operator>(const TimeCode &rhs) const
+	{
+		if (!(((version == 1) || (version == 2)) && ((rhs.version == 1) || (rhs.version == 2))))
+			throw new note_error("Invalid time code.");
+		else if (version != rhs.version)
+			throw new note_error("Incomparable time code: Different version of time code.");
+		else switch (version)
+		{
+		case 1:
+			return (time > rhs.time);
+			break;
+
+		case 2:
+			return (tick > rhs.tick);
+			break;
+
+		default:
+			throw new note_error("Invalid time code.");
+			break;
+		}
+		return (time > rhs.time) || (tick > rhs.tick);
+	}
+
+	bool operator>(const double &rhs) const
+	{
+		if (version != 1)
+			throw new note_error("Incomparable time code: Different version of time code.");
+		return time > rhs;
+	}
+
+	bool operator>(const int &rhs) const
+	{
+		if (version != 2)
+			throw new note_error("Incomparable time code: Different version of time code.");
+		return tick > rhs;
 	}
 };
 

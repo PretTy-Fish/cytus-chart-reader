@@ -595,7 +595,7 @@ struct Note : Event
 	}
 };
 
-class Chart : public augList<Note>
+class Chart
 {
 private:
 	int version = 0;
@@ -605,15 +605,16 @@ private:
 	augList<Page> pageList;
 	augList<Tempo> tempoList;
 	augList<SpeedChange> eventList;
+	augList<Note> noteList;
 	const Note linkSentinal;
 
 public:
 	Chart();
 	Chart(const std::string &input);
-	void sortID();
-	virtual void sort();
-	void link(int firstID, int secondID);
-	void link(std::vector<int> idList);
+	void sortNoteID();
+	virtual void sortNote();
+	void linkNote(int firstID, int secondID);
+	void linkNote(std::vector<int> idList);
 	void parse(const std::string &input);
 	void save(const std::string &output);
 };
@@ -643,25 +644,25 @@ Chart::Chart(const std::string &input)
 	parse(input);
 }
 
-void Chart::sortID()
+void Chart::sortNoteID()
 {
-	iterator it;
+	augList<Note>::iterator it;
 	int i;
-	for (it = this->begin(), i = 0; it != this->end(); ++it, ++i)
+	for (it = this->noteList.begin(), i = 0; it != this->noteList.end(); ++it, ++i)
 	{
 		it->id = i;
 	}
 	return;
 }
 
-void Chart::sort()
+void Chart::sortNote()
 {
-	std::list<Note>::sort();
-	sortID();
+	noteList.sort();
+	sortNoteID();
 	return;
 }
 
-void Chart::link(int firstID, int secondID)
+void Chart::linkNote(int firstID, int secondID)
 {
 	Note *first, *second;
 	if (firstID == -1)
@@ -675,7 +676,7 @@ void Chart::link(int firstID, int secondID)
 		{
 			try
 			{
-				second = &this->at(secondID);
+				second = &this->noteList.at(secondID);
 			}
 			catch (std::out_of_range &oor)
 			{
@@ -701,7 +702,7 @@ void Chart::link(int firstID, int secondID)
 		{
 			try
 			{
-				first = &this->at(firstID);
+				first = &this->noteList.at(firstID);
 			}
 			catch (std::out_of_range &oor)
 			{
@@ -721,7 +722,7 @@ void Chart::link(int firstID, int secondID)
 		bool chart_error_flag = false;
 		try
 		{
-			first = &this->at(firstID);
+			first = &this->noteList.at(firstID);
 		}
 		catch (std::out_of_range &oor)
 		{
@@ -734,7 +735,7 @@ void Chart::link(int firstID, int secondID)
 		}
 		try
 		{
-			second = &this->at(secondID);
+			second = &this->noteList.at(secondID);
 		}
 		catch (std::out_of_range &oor)
 		{
@@ -769,11 +770,11 @@ void Chart::link(int firstID, int secondID)
 	return;
 }
 
-void Chart::link(std::vector<int> idList)
+void Chart::linkNote(std::vector<int> idList)
 {
 	for (std::vector<int>::iterator it = idList.begin(); it != idList.end();)
 	{
-		link(*it, *++it);
+		linkNote(*it, *++it);
 	}
 	return;
 }

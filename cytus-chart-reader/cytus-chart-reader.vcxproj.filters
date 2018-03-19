@@ -18,6 +18,9 @@
     <ClInclude Include="cytus.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="cytus2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cytus-chart-reader.cpp">

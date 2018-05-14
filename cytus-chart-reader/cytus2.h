@@ -12,7 +12,8 @@
 #include <string>
 #include <list>
 #include <vector>
-#include <exception>
+#include <climits>
+#include <cfloat>
 #include <stdexcept>
 #include <iostream>
 #include <fstream>
@@ -64,11 +65,11 @@ public:
 
 namespace Cytus2
 {
-	class cytus2_error : public std::exception
+	class cytus2_error : public std::runtime_error
 	{
 	public:
 		cytus2_error(const std::string &error_message = "cytus2 error") noexcept
-			: exception(error_message.c_str())
+			: runtime_error(error_message.c_str())
 		{
 		}
 	};

@@ -1,12 +1,3 @@
-/***********************************************
-*
-*	File Name: cytus.h
-*	Description: Define the essentials for chart info for Cytus
-*	Author: PretTyFish
-*	Email: 1250840403@qq.com
-*
-***********************************************/
-
 #pragma once
 
 #include <string>
